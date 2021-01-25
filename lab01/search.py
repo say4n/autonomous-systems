@@ -200,7 +200,39 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
 
+    predecessor = dict()
+    distance = collections.defaultdict(lambda: float('inf'))
 
+    start = (problem.getStartState(), None, 0)
+    goal = None
+    distance[start[0]] = 0
+
+    pqueue = util.PriorityQueue()
+    pqueue.push(start, distance[start])
+    predecessor[start] = None
+
+    while not pqueue.isEmpty():
+        top = pqueue.pop()
+
+        if problem.isGoalState(top[0]):
+            goal = top
+            break
+
+        successors = problem.getSuccessors(top[0])
+        for s in successors:
+            g = distance[top[0]] + top[2]
+            h = heuristic(top[0], problem)
+            if distance[s[0]] > g + h:
+                distance[s[0]] = g + h
+                predecessor[s] = top
+                pqueue.push(s, distance[s[0]])
+
+    path = []
+    while goal is not start:
+        path.append(goal[1])
+        goal = predecessor[goal]
+
+    return path[::-1]
 
 
 # Abbreviations
