@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -17,6 +17,7 @@ In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
 
+import collections
 import util
 
 class SearchProblem:
@@ -87,12 +88,73 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    visited = collections.defaultdict(bool)
+    predecessor = dict()
+    start = (problem.getStartState(), None, None)
+    goal = None
+
+    stack = util.Stack()
+    stack.push(start)
+    predecessor[start] = None
+
+    while not stack.isEmpty():
+        top = stack.pop()
+        visited[top[0]] = True
+
+        # print(f"top: {top[0]}")
+
+        if problem.isGoalState(top[0]):
+            goal = top
+            break
+
+        successors = problem.getSuccessors(top[0])
+        for s in successors:
+            if not visited[s[0]]:
+                stack.push(s)
+                predecessor[s] = top
+
+    path = []
+    while goal is not start:
+        path.append(goal[1])
+        goal = predecessor[goal]
+
+    return path[::-1]
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    visited = collections.defaultdict(bool)
+    predecessor = dict()
+    start = (problem.getStartState(), None, None)
+    goal = None
+
+    queue = util.Queue()
+    queue.push(start)
+    predecessor[start] = None
+
+    while not queue.isEmpty():
+        top = queue.pop()
+        visited[top[0]] = True
+
+        # print(f"top: {top[0]}")
+
+        if problem.isGoalState(top[0]):
+            goal = top
+            break
+
+        successors = problem.getSuccessors(top[0])
+        for s in successors:
+            if not visited[s[0]]:
+                queue.push(s)
+                predecessor[s] = top
+
+    path = []
+    while goal is not start:
+        path.append(goal[1])
+        goal = predecessor[goal]
+
+    return path[::-1]
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
