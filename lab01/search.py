@@ -102,8 +102,6 @@ def depthFirstSearch(problem):
         top = stack.pop()
         visited[top[0]] = True
 
-        # print(f"top: {top[0]}")
-
         if problem.isGoalState(top[0]):
             goal = top
             break
@@ -137,8 +135,6 @@ def breadthFirstSearch(problem):
         top = queue.pop()
         visited[top[0]] = True
 
-        # print(f"top: {top[0]}")
-
         if problem.isGoalState(top[0]):
             goal = top
             break
@@ -159,7 +155,38 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    predecessor = dict()
+    distance = collections.defaultdict(lambda: float('inf'))
+
+    start = (problem.getStartState(), None, 0)
+    goal = None
+    distance[start[0]] = 0
+
+    pqueue = util.PriorityQueue()
+    pqueue.push(start, distance[start])
+    predecessor[start] = None
+
+    while not pqueue.isEmpty():
+        top = pqueue.pop()
+
+        if problem.isGoalState(top[0]):
+            goal = top
+            break
+
+        successors = problem.getSuccessors(top[0])
+        for s in successors:
+            if distance[s[0]] > distance[top[0]] + top[2]:
+                distance[s[0]] = distance[top[0]] + top[2]
+                predecessor[s] = top
+                pqueue.push(s, distance[s[0]])
+
+    path = []
+    while goal is not start:
+        path.append(goal[1])
+        goal = predecessor[goal]
+
+    return path[::-1]
+
 
 def nullHeuristic(state, problem=None):
     """
