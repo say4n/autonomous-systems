@@ -122,6 +122,7 @@ def depthFirstSearch(problem):
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+
     visited = collections.defaultdict(bool)
     predecessor = dict()
     start = (problem.getStartState(), None, None)
@@ -155,6 +156,7 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+
     predecessor = dict()
     distance = collections.defaultdict(lambda: float('inf'))
 
