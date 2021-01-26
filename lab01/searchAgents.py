@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -40,6 +40,7 @@ from game import Actions
 import util
 import time
 import search
+from copy import deepcopy
 
 class GoWestAgent(Agent):
     "An agent that goes West until it can't."
@@ -288,6 +289,7 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self._visited, self._cvisited = set(), 0
 
     def getStartState(self):
         """
@@ -295,14 +297,17 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        unvisited_corners = deepcopy(self.corners)
+        return (self.startingPosition, unvisited_corners)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        pos, unvisited_corners = state
+        return pos in unvisited_corners and len(unvisited_corners) == 1
 
     def getSuccessors(self, state):
         """
@@ -314,6 +319,14 @@ class CornersProblem(search.SearchProblem):
             state, 'action' is the action required to get there, and 'stepCost'
             is the incremental cost of expanding to that successor
         """
+        (x, y), unvisited_corners = state
+
+        # Check if (x, y) is one of the targets, remove it if yes.
+        next_unvisited_corners = list(unvisited_corners)
+        if (x, y) in next_unvisited_corners:
+            next_unvisited_corners.remove((x, y))
+
+        next_unvisited_corners = tuple(next_unvisited_corners)
 
         successors = []
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
@@ -325,6 +338,13 @@ class CornersProblem(search.SearchProblem):
             #   hitsWall = self.walls[nextx][nexty]
 
             "*** YOUR CODE HERE ***"
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            hitsWall = self.walls[nextx][nexty]
+            if not hitsWall:
+                nextState = ((nextx, nexty), next_unvisited_corners)
+                successors.append((nextState, action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
         return successors
