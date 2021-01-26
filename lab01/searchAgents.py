@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -288,14 +288,14 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self._visited, self._cvisited = {}, 0
+        self._visited, self._cvisited = set(), 0
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"      
+        "*** YOUR CODE HERE ***"
         return self.startingPosition
 
     def isGoalState(self, state):
@@ -303,12 +303,15 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
+
+        # State is a corner, may be a goal state.
         if state in self.corners:
             if state not in self._visited:
-                self._visited[state] = True
-                self._cvisited += 1
-
-        return self._cvisited == 4
+                self._visited.add(state)
+            return len(self._visited) == 4
+        # State is not a corner, cannot be a goal state.
+        else:
+            return False
 
 
     def getSuccessors(self, state):
