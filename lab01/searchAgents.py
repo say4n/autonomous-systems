@@ -383,10 +383,10 @@ def cornersHeuristic(state, problem):
     for pos in state[1]:
         # Distance from current state position to goal corners
         hvalue.append(util.manhattanDistance(state[0], pos))
-    
-    #TODO: ILA, we are getting 1276. I guess it can be improved as best grades 
+
+    #TODO: ILA, we are getting 1276. I guess it can be improved as best grades
     # are received when getting less than 1200
-    return max(hvalue) # Maximize list of distances 
+    return sum(hvalue) # Maximize list of distances
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -484,13 +484,13 @@ def foodHeuristic(state, problem):
 
     for food in foodGrid.asList():
         # Distance from current state position to next food position
-        hvalue.append(util.manhattanDistance(position, food))
+        hvalue.append(mazeDistance(position, food, problem.startingGameState))
 
-    print(hvalue)
-    #TODO: ILA, we are getting 12145. I guess it can be improved as best grades 
+    # print(hvalue)
+    #TODO: ILA, we are getting 12145. I guess it can be improved as best grades
     # are received when getting less than 9000
-    return max(hvalue) # Maximize list of distances 
-    
+    return sum(hvalue) # Maximize list of distances
+
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
