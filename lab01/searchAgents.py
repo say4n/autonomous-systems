@@ -378,9 +378,15 @@ def cornersHeuristic(state, problem):
     """
     corners = problem.corners # These are the corner coordinates
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    hvalue = list()
+    for pos in state[1]:
+        # Distance from current state position to goal corner
+        hvalue.append(util.manhattanDistance(state[0], pos))
+    
+    #TODO: ILA, we are getting 1276. I guess it can be improved as best grades 
+    # are received when getting less than 1200
+    return max(hvalue) # Maximize list of distances 
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
