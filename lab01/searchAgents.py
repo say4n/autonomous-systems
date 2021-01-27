@@ -376,17 +376,16 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    #corners = problem.corners # These are the corner coordinates
+    #walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     "*** YOUR CODE HERE ***"
     hvalue = list()
-    for pos in state[1]:
+    for goal in state[1]:
         # Distance from current state position to goal corners
-        hvalue.append(util.manhattanDistance(state[0], pos))
+        hvalue.append(util.manhattanDistance(state[0], goal))
 
-    #TODO: ILA, we are getting 1276. I guess it can be improved as best grades
-    # are received when getting less than 1200
-    return sum(hvalue) # Maximize list of distances
+    # number of nodes expanded = 965
+    return sum(hvalue) # Sum of distances
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -484,12 +483,10 @@ def foodHeuristic(state, problem):
 
     for food in foodGrid.asList():
         # Distance from current state position to next food position
-        hvalue.append(mazeDistance(position, food, problem.startingGameState))
+        hvalue.append(util.manhattanDistance(position, food))
 
-    # print(hvalue)
-    #TODO: ILA, we are getting 12145. I guess it can be improved as best grades
-    # are received when getting less than 9000
-    return sum(hvalue) # Maximize list of distances
+    #number of nodes expanded = 7767
+    return sum(hvalue) # Sum of distances
 
 
 class ClosestDotSearchAgent(SearchAgent):
