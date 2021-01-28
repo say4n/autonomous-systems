@@ -123,35 +123,24 @@ def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
 
-    visited = collections.defaultdict(bool)
-    predecessor = dict()
-    start = (problem.getStartState(), None, None)
-    goal = None
+    visited = set()
 
     queue = util.Queue()
-    queue.push(start)
-    predecessor[start] = None
+    queue.push((problem.getStartState(), []))
 
     while not queue.isEmpty():
-        top = queue.pop()
-        visited[top[0]] = True
+        front = queue.pop()
 
-        if problem.isGoalState(top[0]):
-            goal = top
-            break
+        if problem.isGoalState(front[0]):
+            return front[1]
 
-        successors = problem.getSuccessors(top[0])
-        for s in successors:
-            if not visited[s[0]]:
-                queue.push(s)
-                predecessor[s] = top
+        if front[0] not in visited:
+            visited.add(front[0])
+            for s in problem.getSuccessors(front[0]):
+                if s[0] not in visited:
+                    queue.push((s[0], front[1] + [s[1]]))
 
-    path = []
-    while goal is not start:
-        path.append(goal[1])
-        goal = predecessor[goal]
-
-    return path[::-1]
+    return []
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
