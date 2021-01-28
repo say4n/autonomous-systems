@@ -482,7 +482,7 @@ def foodHeuristic(state, problem):
 
     for food in foodGrid.asList():
         # Distance from current state position to next food position
-        hvalue.append(util.manhattanDistance(position, food))
+        hvalue.append(mazeDistance(state[0], food, problem.startingGameState))
 
     #number of nodes expanded = 7767
     return max(hvalue) # Sum of distances
