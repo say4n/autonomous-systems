@@ -135,37 +135,25 @@ def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
 
-    predecessor = dict()
-    distance = collections.defaultdict(lambda: float('inf'))
-
-    start = (problem.getStartState(), None, 0)
-    goal = None
-    distance[start[0]] = 0
+    visited = set()
 
     pqueue = util.PriorityQueue()
-    pqueue.push(start, distance[start])
-    predecessor[start] = None
+    pqueue.push(((problem.getStartState(), [], 0)), 0)
 
     while not pqueue.isEmpty():
         top = pqueue.pop()
 
         if problem.isGoalState(top[0]):
-            goal = top
-            break
+            return top[1]
 
-        successors = problem.getSuccessors(top[0])
-        for s in successors:
-            if distance[s[0]] > distance[top[0]] + top[2]:
-                distance[s[0]] = distance[top[0]] + top[2]
-                predecessor[s] = top
-                pqueue.push(s, distance[s[0]])
+        if top[0] not in visited:
+            visited.add(top[0])
+            for s in problem.getSuccessors(top[0]):
+                if s[0] not in visited:
+                    distance = top[2] + s[2]
+                    pqueue.update((s[0], top[1] + [s[1]], distance), distance)
 
-    path = []
-    while goal is not start:
-        path.append(goal[1])
-        goal = predecessor[goal]
-
-    return path[::-1]
+    return []
 
 def nullHeuristic(state, problem=None):
     """
