@@ -379,13 +379,13 @@ def cornersHeuristic(state, problem):
     #corners = problem.corners # These are the corner coordinates
     #walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     "*** YOUR CODE HERE ***"
-    hvalue = list()
+    hvalue = [0]
     for goal in state[1]:
         # Distance from current state position to goal corners
         hvalue.append(util.manhattanDistance(state[0], goal))
 
     # number of nodes expanded = 965
-    return sum(hvalue) # Sum of distances
+    return max(hvalue) # Sum of distances
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -479,14 +479,14 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    hvalue = list()
+    hvalue = [0]
 
     for food in foodGrid.asList():
         # Distance from current state position to next food position
         hvalue.append(util.manhattanDistance(position, food))
 
     #number of nodes expanded = 7767
-    return sum(hvalue) # Sum of distances
+    return max(hvalue) # Sum of distances
 
 
 class ClosestDotSearchAgent(SearchAgent):
