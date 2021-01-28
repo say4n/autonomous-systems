@@ -89,35 +89,24 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
 
-    visited = collections.defaultdict(bool)
-    predecessor = dict()
-    start = (problem.getStartState(), None, None)
-    goal = None
+    visited = set()
 
     stack = util.Stack()
-    stack.push(start)
-    predecessor[start] = None
+    stack.push((problem.getStartState(), []))
 
     while not stack.isEmpty():
         top = stack.pop()
-        visited[top[0]] = True
 
         if problem.isGoalState(top[0]):
-            goal = top
-            break
+            return top[1]
 
-        successors = problem.getSuccessors(top[0])
-        for s in successors:
-            if not visited[s[0]]:
-                stack.push(s)
-                predecessor[s] = top
+        if top[0] not in visited:
+            visited.add(top[0])
+            for s in problem.getSuccessors(top[0]):
+                if s[0] not in visited:
+                    stack.push((s[0], top[1] + [s[1]]))
 
-    path = []
-    while goal is not start:
-        path.append(goal[1])
-        goal = predecessor[goal]
-
-    return path[::-1]
+    return []
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
