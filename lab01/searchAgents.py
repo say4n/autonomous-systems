@@ -383,8 +383,7 @@ def cornersHeuristic(state, problem):
         # Distance from current state position to goal corners
         hvalue.append(util.manhattanDistance(state[0], goal))
 
-    # number of nodes expanded = 965
-    return max(hvalue) # Sum of distances
+    return max(hvalue)
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -484,8 +483,7 @@ def foodHeuristic(state, problem):
         # Distance from current state position to next food position
         hvalue.append(mazeDistance(state[0], food, problem.startingGameState))
 
-    #number of nodes expanded = 7767
-    return max(hvalue) # Sum of distances
+    return max(hvalue)
 
 
 class ClosestDotSearchAgent(SearchAgent):
