@@ -55,9 +55,10 @@ def generate_theory(board, verbose):
     for i in range(1, 10):
         clauses.append([i + 9 * mult for mult in range(81)])
 
-    # Check for columns.
-    # Check for rows.
-    # Check for small squares.
+    # For each filled (pre-populated) cell.
+    ## Check for columns.
+    ## Check for rows.
+    ## Check for small squares.
 
     return clauses, variables, size
 
