@@ -1,3 +1,4 @@
+import platform
 import subprocess
 import time
 
@@ -20,7 +21,12 @@ def solve(cnf_filename, verbose):
     a satisfying assignment, if SAT, or an empty dictionary, otherwise.
     """
     output = 'solver.output'
-    cmd = ['minisat', cnf_filename, output]
+    if platform.system() == "Darwin":
+        cmd = ['cryptominisat5', '--verb', '0', cnf_filename, output]
+    elif platform.system() == "Linux":
+        cmd = ['minisat', cnf_filename, output]
+    else:
+        raise SystemError("Unsupported platform.")
 
     if verbose:
         retcode = subprocess.call(cmd)
