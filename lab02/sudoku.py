@@ -51,11 +51,12 @@ def generate_theory(board, verbose):
 
     # First add equality constraint for the numbers. (ie. 1 == 10 == 19 and so on)
     # This ensures that two numbers with the same face value have the same truth value.
-    # FIXME: Is this required?
     for i in range(1, 10):
         clauses.append([i + 9 * mult for mult in range(81)])
 
     # For each filled (pre-populated) cell.
+    for cell in board.all_coordinates():
+        if board.vale
     ## Check for columns.
     ## Check for rows.
     ## Check for small squares.
