@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import collections
 import itertools
 import math
 import sys
@@ -36,9 +37,27 @@ def generate_theory(board, verbose):
     """ Generate the propositional theory that corresponds to the given board. """
     size = board.size()
     clauses = []
-    variables = {}
+    variables = set()
 
-    # TODO
+    possible_values_in_position = collections.defaultdict(list)
+    base = 1
+    for cell in board.all_coordinates():
+        for i in range(9):
+            possible_values_in_position[cell].append(base + i)
+            variables.add(base + i)
+        base += 9
+
+    # print(possible_values_in_position)
+
+    # First add equality constraint for the numbers. (ie. 1 == 10 == 19 and so on)
+    # This ensures that two numbers with the same face value have the same truth value.
+    # FIXME: Is this required?
+    for i in range(1, 10):
+        clauses.append([i + 9 * mult for mult in range(81)])
+
+    # Check for columns.
+    # Check for rows.
+    # Check for small squares.
 
     return clauses, variables, size
 
