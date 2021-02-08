@@ -43,6 +43,10 @@ def generate_theory(board, verbose):
     # the j-th column has the number n, it is represented as:
     # v := 100 * i + 10 * j + n
     # and, if it does not have the number, it is represented as -v.
+    for row in range(size):
+        for col in range(size):
+            for n in range(1, 10):
+                variables.add(100 * row + 10 * col + n)
 
     # Ensure that each cell has one and only one possible value allocated to it.
     at_least_one_value = []
