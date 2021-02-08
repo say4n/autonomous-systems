@@ -95,7 +95,26 @@ def generate_theory(board, verbose):
     if verbose: print(f"all_columns: {all_columns}", end="\n\n")
     clauses.extend(all_columns)
 
-    # Ensure that each row has all numbers in 1...9 only once.
+    # Ensure that each row has all numbers in 1...9 only once. Similar to
+    # columns (above).
+    all_rows = []
+    for row in range(1, size + 1):
+        single_row = []
+        for number in range(1, 10):
+            # At least once in a row.
+            single_row.append(list([100 * row + 10 * col + number for col in range(1, size + 1)]))
+
+            # Only once in a row.
+            for c1 in range(1, size + 1):
+                for c2 in range(c1 + 1, size + 1):
+                    v1 = row * 100 + c1 * 10 + number
+                    v2 = row * 100 + c2 * 10 + number
+                    single_row.append([-v1, -v2])
+
+        all_rows.extend(single_row)
+
+    if verbose: print(f"all_rows: {all_rows}", end="\n\n")
+    clauses.extend(all_rows)
 
     # Ensure that each sub-grid has all numbers in 1...9 only once.
 
