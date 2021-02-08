@@ -57,7 +57,7 @@ def generate_theory(board, verbose):
                 value_per_cell.append(100 * r + 10 * c + n)
             at_least_one_value.append(value_per_cell)
 
-    if verbose: print(f"at_least_one_value: {at_least_one_value}")
+    if verbose: print(f"at_least_one_value: {at_least_one_value}", end="\n\n")
     clauses.extend(at_least_one_value)
 
     at_most_one_value = []
@@ -69,20 +69,30 @@ def generate_theory(board, verbose):
                     v2 = 100 * r + 10 * c + n2
                     at_most_one_value.append([-v1, -v2])
 
-    if verbose: print(f"at_most_one_value: {at_most_one_value}")
+    if verbose: print(f"at_most_one_value: {at_most_one_value}", end="\n\n")
     clauses.extend(at_most_one_value)
 
 
     # Ensure that each column has all numbers in 1...9 only once.
     # ie. for the first column: 11n 21n 31n 41n 51n 61n 71n 81n 91n
+    # and only once: -11n -12n
     all_columns = []
     for col in range(1, size + 1):
         single_column = []
         for number in range(1, 10):
+            # At least once in a column.
             single_column.append(list([100 * row + 10 * col + number for row in range(1, size + 1)]))
+
+            # Only once in a column.
+            for r1 in range(1, size + 1):
+                for r2 in range(r1 + 1, size + 1):
+                    v1 = r1 * 100 + col * 10 + number
+                    v2 = r2 * 100 + col * 10 + number
+                    single_column.append([-v1, -v2])
+
         all_columns.extend(single_column)
 
-    if verbose: print(f"all_columns: {all_columns}")
+    if verbose: print(f"all_columns: {all_columns}", end="\n\n")
     clauses.extend(all_columns)
 
     # Ensure that each row has all numbers in 1...9 only once.
