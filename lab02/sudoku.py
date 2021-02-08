@@ -39,48 +39,32 @@ def generate_theory(board, verbose):
     clauses = []
     variables = set()
 
-    # This dict stores a mapping of possible values, given the current cell
-    # position.
-    possible_values_in_position = collections.defaultdict(list)
-    base = 1
-    for cell in board.all_coordinates():
-        for i in range(9):
-            possible_values_in_position[cell].append(base + i)
-            variables.add(base + i)
-        base += 9
-
-    if verbose: print(possible_values_in_position)
-
-    # Equality constraint ensures that two numbers with the same face value have
-    # the same truth value (ie. 1 == 10 == 19 and so on).
-    for i in range(1, 10):
-        clauses.append([i + 9 * mult for mult in range(81)])
+    # Variable representation is as follows: if the cell in the i-th row, and
+    # the j-th column has the number n, it is represented as:
+    # v := 100 * i + 10 * j + n
+    # and, if it does not have the number, it is represented as -v.
 
     # Ensure that each cell has one and only one possible value allocated to it.
-    for cell in board.all_coordinates():
-        clauses.append(possible_values_in_position[cell])
-        for i_a, val_a in enumerate(possible_values_in_position[cell]):
-            for i_b, val_b in enumerate(possible_values_in_position[cell]):
-                if i_a < i_b:
-                    clauses.append([-val_a, -val_b])
+    at_least_one_value = []
+    for r in range(size):
+        for c in range(size):
+            for n in range(1, 10):
+                at_least_one_value.append(100 * r + 10 * c + n)
 
-    # Ensure that each column has all numbers in 1...9 only once.
-    for col in range(size):
-        for number in range(9):
-            c = []
-            for row in range(size):
-                c.append(possible_values_in_position[(row, col)][number])
+    clauses.append(at_least_one_value)
 
-            clauses.append(c)
+    at_most_one_value = []
+    for r in range(size):
+        for c in range(size):
+            for n1 in range(1, 10):
+                for n2 in range(n1 + 1, 10):
+                    v1 = 100 * r + 10 * c + n1
+                    v2 = 100 * r + 10 * c + n2
+                    at_most_one_value.append([-v1, -v2])
+
+    # # Ensure that each column has all numbers in 1...9 only once.
 
     # Ensure that each row has all numbers in 1...9 only once.
-    for row in range(size):
-        for number in range(9):
-            r = []
-            for col in range(size):
-                r.append(possible_values_in_position[(row, col)][number])
-
-            clauses.append(r)
 
     # Ensure that each sub-grid has all numbers in 1...9 only once.
 
