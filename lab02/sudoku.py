@@ -43,23 +43,26 @@ def generate_theory(board, verbose):
     # the j-th column has the number n, it is represented as:
     # v := 100 * i + 10 * j + n
     # and, if it does not have the number, it is represented as -v.
-    for row in range(size):
-        for col in range(size):
+    for row in range(1, size + 1):
+        for col in range(1, size + 1):
             for n in range(1, 10):
                 variables.add(100 * row + 10 * col + n)
 
     # Ensure that each cell has one and only one possible value allocated to it.
     at_least_one_value = []
-    for r in range(size):
-        for c in range(size):
+    for r in range(1, size + 1):
+        for c in range(1, size + 1):
+            value_per_cell = []
             for n in range(1, 10):
-                at_least_one_value.append(100 * r + 10 * c + n)
+                value_per_cell.append(100 * r + 10 * c + n)
+            at_least_one_value.append(value_per_cell)
 
-    clauses.append(at_least_one_value)
+    if verbose: print(f"at_least_one_value: {at_least_one_value}")
+    clauses.extend(at_least_one_value)
 
     at_most_one_value = []
-    for r in range(size):
-        for c in range(size):
+    for r in range(1, size + 1):
+        for c in range(1, size + 1):
             for n1 in range(1, 10):
                 for n2 in range(n1 + 1, 10):
                     v1 = 100 * r + 10 * c + n1
@@ -71,6 +74,16 @@ def generate_theory(board, verbose):
 
 
     # Ensure that each column has all numbers in 1...9 only once.
+    # ie. for the first column: 11n 21n 31n 41n 51n 61n 71n 81n 91n
+    all_columns = []
+    for col in range(1, size + 1):
+        single_column = []
+        for number in range(1, 10):
+            single_column.append(list([100 * row + 10 * col + number for row in range(1, size + 1)]))
+        all_columns.extend(single_column)
+
+    if verbose: print(f"all_columns: {all_columns}")
+    clauses.extend(all_columns)
 
     # Ensure that each row has all numbers in 1...9 only once.
 
