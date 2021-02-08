@@ -22,7 +22,7 @@ def solve(cnf_filename, verbose):
     """
     output = 'solver.output'
     if platform.system() == "Darwin":
-        cmd = ['cryptominisat5', '--verb', '0', cnf_filename, output]
+        cmd = ['cryptominisat5', '--verb', '0', cnf_filename, "--dumpresult", output]
     elif platform.system() == "Linux":
         cmd = ['minisat', cnf_filename, output]
     else:
