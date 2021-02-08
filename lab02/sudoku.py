@@ -117,6 +117,32 @@ def generate_theory(board, verbose):
     clauses.extend(all_rows)
 
     # Ensure that each sub-grid has all numbers in 1...9 only once.
+    all_subgrids = []
+    for superrow in range (3):
+        for supercol in range(3):
+            subgrid = []
+            for number in range(1, 10):
+                # Number appears once in the subgrid.
+                single_number = []
+                for r in range(1, 4):
+                    for c in range(1, 4):
+                        row = superrow * 3 + r
+                        col = supercol * 3 + c
+
+                        single_number.append(100 * row + 10 * col + number)
+
+                subgrid.append(single_number)
+
+                # Number appears only once in sub-grid.
+                for i1, v1 in enumerate(single_number):
+                    for i2, v2 in enumerate(single_number):
+                        if i2 > i1:
+                            subgrid.append([-v1, -v2])
+
+            all_subgrids.extend(subgrid)
+
+    if verbose: print(f"all_subgrids: {all_subgrids}", end="\n\n")
+    clauses.extend(all_subgrids)
 
     # Initialize conditions for given board.
 
