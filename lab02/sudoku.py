@@ -145,6 +145,15 @@ def generate_theory(board, verbose):
     clauses.extend(all_subgrids)
 
     # Initialize conditions for given board.
+    initialization = []
+    for cell in board.all_coordinates():
+        if board.value(*cell) != 0:
+            r, c = cell
+            v = 100 * r + 10 * c + board.value(*cell)
+            initialization.append([v])
+
+    if verbose: print(f"initialization: {initialization}", end="\n\n")
+    clauses.extend(initialization)
 
     return clauses, variables, size
 
