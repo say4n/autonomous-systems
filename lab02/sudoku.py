@@ -29,7 +29,15 @@ def print_solution(solution):
 
 def compute_solution(sat_assignment, variables, size):
     solution = []
-    # TODO: Map the SAT assignment back into a Sudoku solution
+
+    for row in range(1, size + 1):
+        for col in range(1, size + 1):
+            for number in range(1, 10):
+                v = 100 * row + 10 * col + number
+                if sat_assignment[v]:
+                    solution.append(number)
+                    break
+
     return solution
 
 
@@ -57,7 +65,7 @@ def generate_theory(board, verbose):
                 value_per_cell.append(100 * r + 10 * c + n)
             at_least_one_value.append(value_per_cell)
 
-    if verbose: print(f"at_least_one_value: {at_least_one_value}", end="\n\n")
+    # if verbose: print(f"at_least_one_value: {at_least_one_value}", end="\n\n")
     clauses.extend(at_least_one_value)
 
     at_most_one_value = []
@@ -69,7 +77,7 @@ def generate_theory(board, verbose):
                     v2 = 100 * r + 10 * c + n2
                     at_most_one_value.append([-v1, -v2])
 
-    if verbose: print(f"at_most_one_value: {at_most_one_value}", end="\n\n")
+    # if verbose: print(f"at_most_one_value: {at_most_one_value}", end="\n\n")
     clauses.extend(at_most_one_value)
 
 
@@ -92,7 +100,7 @@ def generate_theory(board, verbose):
 
         all_columns.extend(single_column)
 
-    if verbose: print(f"all_columns: {all_columns}", end="\n\n")
+    # if verbose: print(f"all_columns: {all_columns}", end="\n\n")
     clauses.extend(all_columns)
 
     # Ensure that each row has all numbers in 1...9 only once. Similar to
@@ -113,7 +121,7 @@ def generate_theory(board, verbose):
 
         all_rows.extend(single_row)
 
-    if verbose: print(f"all_rows: {all_rows}", end="\n\n")
+    # if verbose: print(f"all_rows: {all_rows}", end="\n\n")
     clauses.extend(all_rows)
 
     # Ensure that each sub-grid has all numbers in 1...9 only once.
@@ -141,7 +149,7 @@ def generate_theory(board, verbose):
 
             all_subgrids.extend(subgrid)
 
-    if verbose: print(f"all_subgrids: {all_subgrids}", end="\n\n")
+    # if verbose: print(f"all_subgrids: {all_subgrids}", end="\n\n")
     clauses.extend(all_subgrids)
 
     # Initialize conditions for given board.
@@ -152,7 +160,7 @@ def generate_theory(board, verbose):
             v = 100 * (r + 1) + 10 * (c + 1) + board.value(*cell)
             initialization.append([v])
 
-    if verbose: print(f"initialization: {initialization}", end="\n\n")
+    # if verbose: print(f"initialization: {initialization}", end="\n\n")
     clauses.extend(initialization)
 
     return clauses, variables, size
