@@ -39,6 +39,8 @@ def generate_theory(board, verbose):
     clauses = []
     variables = set()
 
+    # This dict stores a mapping of possible values, given the current cell
+    # position.
     possible_values_in_position = collections.defaultdict(list)
     base = 1
     for cell in board.all_coordinates():
@@ -47,19 +49,42 @@ def generate_theory(board, verbose):
             variables.add(base + i)
         base += 9
 
-    # print(possible_values_in_position)
+    if verbose: print(possible_values_in_position)
 
-    # First add equality constraint for the numbers. (ie. 1 == 10 == 19 and so on)
-    # This ensures that two numbers with the same face value have the same truth value.
+    # Equality constraint ensures that two numbers with the same face value have
+    # the same truth value (ie. 1 == 10 == 19 and so on).
     for i in range(1, 10):
         clauses.append([i + 9 * mult for mult in range(81)])
 
-    # For each filled (pre-populated) cell.
+    # Ensure that each cell has one and only one possible value allocated to it.
     for cell in board.all_coordinates():
-        if board.vale
-    ## Check for columns.
-    ## Check for rows.
-    ## Check for small squares.
+        clauses.append(possible_values_in_position[cell])
+        for i_a, val_a in enumerate(possible_values_in_position[cell]):
+            for i_b, val_b in enumerate(possible_values_in_position[cell]):
+                if i_a < i_b:
+                    clauses.append([-val_a, -val_b])
+
+    # Ensure that each column has all numbers in 1...9 only once.
+    for col in range(size):
+        for number in range(9):
+            c = []
+            for row in range(size):
+                c.append(possible_values_in_position[(row, col)][number])
+
+            clauses.append(c)
+
+    # Ensure that each row has all numbers in 1...9 only once.
+    for row in range(size):
+        for number in range(9):
+            r = []
+            for col in range(size):
+                r.append(possible_values_in_position[(row, col)][number])
+
+            clauses.append(r)
+
+    # Ensure that each sub-grid has all numbers in 1...9 only once.
+
+    # Initialize conditions for given board.
 
     return clauses, variables, size
 
