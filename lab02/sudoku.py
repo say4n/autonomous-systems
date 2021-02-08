@@ -149,7 +149,7 @@ def generate_theory(board, verbose):
     for cell in board.all_coordinates():
         if board.value(*cell) != 0:
             r, c = cell
-            v = 100 * r + 10 * c + board.value(*cell)
+            v = 100 * (r + 1) + 10 * (c + 1) + board.value(*cell)
             initialization.append([v])
 
     if verbose: print(f"initialization: {initialization}", end="\n\n")
