@@ -62,7 +62,11 @@ def generate_theory(board, verbose):
                     v2 = 100 * r + 10 * c + n2
                     at_most_one_value.append([-v1, -v2])
 
-    # # Ensure that each column has all numbers in 1...9 only once.
+    if verbose: print(f"at_most_one_value: {at_most_one_value}")
+    clauses.extend(at_most_one_value)
+
+
+    # Ensure that each column has all numbers in 1...9 only once.
 
     # Ensure that each row has all numbers in 1...9 only once.
 
