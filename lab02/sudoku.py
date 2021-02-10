@@ -169,7 +169,29 @@ def generate_theory(board, verbose):
 def count_number_solutions(board, verbose=False):
     count = 0
 
-    # TODO
+    clauses, variables, size = generate_theory(board, verbose)
+
+    # Find solutions as long as they exist.
+    while True:
+        name = "theory_for_counting.cnf"
+        save_dimacs_cnf(variables, clauses, name, verbose)
+        result, sat_assignment = solve(name, verbose)
+
+        if result != "SAT":
+            break
+        else:
+            count += 1
+
+            eliminate_solution = []
+            for v in variables:
+                # If the solution needed v, add -v to clauses.
+                if sat_assignment[v]:
+                    eliminate_solution.append(-v)
+                # Else add v to clauses.
+                else:
+                    eliminate_solution.append(v)
+
+            clauses.append(eliminate_solution)
 
     print(f'Number of solutions: {count}')
 
