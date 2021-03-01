@@ -1,0 +1,5 @@
+(go-to-chair c)
+(pickup-chair c)
+(go-to-banana b)
+(have-banana b)
+; cost = 4 (unit cost)
