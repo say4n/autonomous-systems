@@ -69,6 +69,41 @@ def main(argv):
     #  3. Invoke some classical planner to solve the generated instance.
     #  3. Check the output and print the plan into the screen in some readable form.
 
+    # Generate Sokoban instance.
+
+    objects = f"""
+(:objects
+    player
+    {" ".join("crate_" + str(i) for i in range(len(board.boxes)))}
+    {" ".join("loc_" + str(r) + str(c) for r in range(board.h) for c in range(board.w))}
+)
+"""
+
+    init = f"""
+(:init
+    (PLAYER player)
+    {" ".join(["a"])}
+)
+"""
+    goal = """
+(:goal (and )
+)
+"""
+    instance = f"""
+(define (problem sokoban-instance)
+
+(:domain sokoban-teleport)
+
+{objects}
+
+{init}
+
+{goal}
+
+)
+"""
+    print(instance)
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
