@@ -6,10 +6,10 @@
 
 (:predicates
     ; Player x.
-    (is-player ?x)
+    (PLAYER ?x)
 
     ; Crate x.
-    (is-crate ?x)
+    (CRATE ?x)
 
     ; Position x is adjacent to position y.
     (is-adjacent ?x ?y)
@@ -24,28 +24,28 @@
     (has-teleported)
 
     ; Object y located at position x.
-    (object-at ?x ?y)
+    (at ?x ?y)
 )
 
 (:action move
     :parameters (?player ?current_position ?next_position)
     :precondition (and
         ; Is ?player a player?
-        (is-player ?player)
+        (PLAYER ?player)
 
         ; Is the next position free?
         (is-free ?next_position)
 
         ; Is the ?player at current position?
-        (object-at ?player ?current_position)
+        (at ?player ?current_position)
 
         ; Is the move from current to next position valid?
         (is-adjacent ?current_position ?next_position)
     )
     :effect (and
         ; Move player to next position.
-        (object-at ?player ?next_position)
-        (not (object-at ?player ?current_position))
+        (at ?player ?next_position)
+        (not (at ?player ?current_position))
 
         ; Mark previous position as free.
         (is-free ?current_position)
@@ -57,16 +57,16 @@
     :parameters (?player ?crate ?player_position ?crate_position ?next_position)
     :precondition (and
         ; Is ?player a player?
-        (is-player ?player)
+        (PLAYER ?player)
 
         ; Is ?player at ?player_position?
-        (object-at ?player ?player_position)
+        (at ?player ?player_position)
 
         ; Is ?crate a crate?
-        (is-crate ?crate)
+        (CRATE ?crate)
 
         ; Is ?crate at ?crate_position?
-        (object-at ?crate ?crate_position)
+        (at ?crate ?crate_position)
 
         ; Is ?next_position free?
         (is-free ?next_position)
@@ -78,13 +78,13 @@
     )
     :effect (and
         ; Move player to crate and mark the location as free.
-        (object-at ?player ?crate_position)
-        (not (object-at ?player ?player_position))
+        (at ?player ?crate_position)
+        (not (at ?player ?player_position))
         (is-free ?player_position)
 
         ; Move crate to next position.
-        (object-at ?crate ?next_position)
-        (not (object-at ?crate ?crate_position))
+        (at ?crate ?next_position)
+        (not (at ?crate ?crate_position))
         (not (is-free ?next_position))
     )
 )
@@ -93,21 +93,21 @@
     :parameters (?player ?current_position ?next_position)
     :precondition (and
         ; Is ?player a player?
-        (is-player ?player)
+        (PLAYER ?player)
 
         ; Is the next position free?
         (is-free ?next_position)
 
         ; Is the ?player at current position?
-        (object-at ?player ?current_position)
+        (at ?player ?current_position)
 
         ; ?player must not have teleported earlier.
         (not (has-teleported))
     )
     :effect (and
         ; Move player to next position.
-        (object-at ?player ?next_position)
-        (not (object-at ?player ?current_position))
+        (at ?player ?next_position)
+        (not (at ?player ?current_position))
 
         ; Mark previous position as free.
         (is-free ?current_position)
