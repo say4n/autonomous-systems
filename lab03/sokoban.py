@@ -2,11 +2,13 @@
 
 import argparse
 import sys
+import subprocess
 
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser(description='Solve Sudoku problems.')
     parser.add_argument("-i", help="Path to the file with the Sokoban instance.")
+    parser.add_argument("-f", help="Path to the fast-downward.py.")
     return parser.parse_args(argv)
 
 
@@ -64,7 +66,7 @@ def generate_instance_file(board, outfilename="sokoban-instance.pddl"):
 (:objects
     player
     {" ".join("crate_" + str(i) for i in range(len(board.boxes)))}
-    {" ".join("row_" + str(r) + "col_" + str(c) for r in range(board.h) for c in range(board.w))}
+    {" ".join("row_" + str(r) + "_col_" + str(c) for r in range(board.h) for c in range(board.w))}
 )
 """
 
@@ -74,37 +76,37 @@ def generate_instance_file(board, outfilename="sokoban-instance.pddl"):
 """
 
     # Initialize crates, player.
-    init += f"\t(at player row_{board.player[0]}col_{board.player[1]})\n"
+    init += f"\t(at player row_{board.player[0]}_col_{board.player[1]})\n"
     for c_id, crate in enumerate(board.boxes):
         init += f"\n\t(CRATE crate_{c_id})"
-        init += f"\n\t(at crate_{c_id} row_{crate[0]}col_{crate[1]})\n"
-        init += f"\n\t(has-crate row_{crate[0]}col_{crate[1]})\n"
+        init += f"\n\t(at crate_{c_id} row_{crate[0]}_col_{crate[1]})\n"
+        init += f"\n\t(has-crate row_{crate[0]}_col_{crate[1]})\n"
 
     # Initialize adjacency, alignment.
     for r in range(board.h):
         for c in range(board.w):
             # Adjacency
             if r + 1 < board.h:
-                init += f"\n\t(is-adjacent row_{r}col_{c} row_{r+1}col_{c})"              # (x, y) -> (x+1, y)
-                init += f"\n\t(is-adjacent row_{r+1}col_{c} row_{r}col_{c})"              # (x, y) <- (x+1, y)
+                init += f"\n\t(is-adjacent row_{r}_col_{c} row_{r+1}_col_{c})"              # (x, y) -> (x+1, y)
+                init += f"\n\t(is-adjacent row_{r+1}_col_{c} row_{r}_col_{c})"              # (x, y) <- (x+1, y)
             if c + 1 < board.w:
-                init += f"\n\t(is-adjacent row_{r}col_{c} row_{r}col_{c+1})"              # (x, y) -> (x, y+1)
-                init += f"\n\t(is-adjacent row_{r}col_{c+1} row_{r}col_{c})"              # (x, y) <- (x, y+1)
+                init += f"\n\t(is-adjacent row_{r}_col_{c} row_{r}_col_{c+1})"              # (x, y) -> (x, y+1)
+                init += f"\n\t(is-adjacent row_{r}_col_{c+1} row_{r}_col_{c})"              # (x, y) <- (x, y+1)
 
             # Alignment
             if r + 1 < board.h and r + 2 < board.h:
-                init += f"\n\t(is-aligned row_{r}col_{c} row_{r+1}col_{c} row_{r+2}col_{c})"    # L to R
-                init += f"\n\t(is-aligned row_{r+2}col_{c} row_{r+1}col_{c} row_{r}col_{c})"    # R to L
+                init += f"\n\t(is-aligned row_{r}_col_{c} row_{r+1}_col_{c} row_{r+2}_col_{c})"    # L to R
+                init += f"\n\t(is-aligned row_{r+2}_col_{c} row_{r+1}_col_{c} row_{r}_col_{c})"    # R to L
 
             if c + 1 < board.w and c + 2 < board.w:
-                init += f"\n\t(is-aligned row_{r}col_{c} row_{r}col_{c+1} row_{r}col_{c+2})"    # U to D
-                init += f"\n\t(is-aligned row_{r}col_{c+2} row_{r}col_{c+1} row_{r}col_{c})"    # D to U
+                init += f"\n\t(is-aligned row_{r}_col_{c} row_{r}_col_{c+1} row_{r}_col_{c+2})"    # U to D
+                init += f"\n\t(is-aligned row_{r}_col_{c+2} row_{r}_col_{c+1} row_{r}_col_{c})"    # D to U
 
     # Initialize free cells.
     for r in range(board.h):
         for c in range(board.w):
             if not board.is_box(r, c) and not board.is_wall(r, c) and not (r, c) == board.player:
-                init += f"\n\t(is-free row_{r}col_{c})"
+                init += f"\n\t(is-free row_{r}_col_{c})"
 
     init += "\n)"
 
@@ -112,7 +114,7 @@ def generate_instance_file(board, outfilename="sokoban-instance.pddl"):
 (:goal (and
 """
     for target in board.goals:
-        goal += f"\n\t(has-crate row_{target[0]}col_{target[1]})"
+        goal += f"\n\t(has-crate row_{target[0]}_col_{target[1]})"
 
     goal += "\n)\n)"
 
@@ -144,12 +146,21 @@ def main(argv):
 
     #  2. Generate an instance.pddl file from the given board, and save it to disk.
     #   Done.
-    generate_instance_file(board)
+    filename = "sokoban-instance.pddl"
+    generate_instance_file(board, filename)
 
     #  3. Invoke some classical planner to solve the generated instance.
-    #   Will invoke fast downward.
+    #   Invoking fast downward.
+    subprocess.call([args.f, "--alias", "lama-first", "sokoban-domain.pddl", filename])
 
     #  3. Check the output and print the plan into the screen in some readable form.
+    #   Checkout output in file named `sas_pan`.
+    plan = ""
+    try:
+        with open("sas_plan", "rt") as planfile:
+            plan = planfile.read()
+    except FileNotFoundError:
+        print("Oops, looks like plan does not exist on disk!")
 
 
 
