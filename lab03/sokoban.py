@@ -10,6 +10,8 @@ def parse_arguments(argv):
     parser = argparse.ArgumentParser(description='Solve Sokoban problems.')
     parser.add_argument("-i", help="Path to the file with the Sokoban instance.")
     parser.add_argument("-f", help="Path to the fast-downward.py.")
+    parser.add_argument("-a", help="Algorithm to use with fast-downward.py.", default="lama-first")
+    parser.add_argument("-t", help="Timeout for fast-downward.py", default="30m")
     return parser.parse_args(argv)
 
 
@@ -160,7 +162,8 @@ def main(argv):
 
     #  3. Invoke some classical planner to solve the generated instance.
     #   Invoking fast downward.
-    subprocess.call([args.f, "--alias", "lama-first", "sokoban-domain.pddl", filename])
+    subprocess.call([args.f, "--log-level", "warning", "--overall-time-limit",
+                        args.t, "--alias", args.a, "sokoban-domain.pddl", filename])
 
     #  3. Check the output and print the plan into the screen in some readable form.
     #   Checkout output in file named `sas_pan`.
@@ -170,6 +173,7 @@ def main(argv):
             plan = planfile.read()
     except FileNotFoundError:
         print("Oops, looks like the plan file does not exist on disk!")
+        exit(124)
 
     actions = []
 
