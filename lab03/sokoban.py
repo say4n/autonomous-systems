@@ -57,25 +57,14 @@ class SokobanGame(object):
         """ Whether the given coordinate is a goal location. """
         return (x, y) in self.goals
 
-
-def main(argv):
-    args = parse_arguments(argv)
-    with open(args.i, 'r') as file:
-        board = SokobanGame(file.read().rstrip('\n'))
-
-    # TODO - Some of the things that you need to do:
-    #  1. (Previously) Have a domain.pddl file somewhere in disk that represents the Sokoban actions and predicates.
-    #  2. Generate an instance.pddl file from the given board, and save it to disk.
-    #  3. Invoke some classical planner to solve the generated instance.
-    #  3. Check the output and print the plan into the screen in some readable form.
-
+def generate_instance_file(board, outfilename="sokoban-instance.pddl"):
     # Generate Sokoban instance.
 
     objects = f"""
 (:objects
     player
     {" ".join("crate_" + str(i) for i in range(len(board.boxes)))}
-    {" ".join("loc_" + str(r) + str(c) for r in range(board.h) for c in range(board.w))}
+    {" ".join("row_" + str(r) + "col_" + str(c) for r in range(board.h) for c in range(board.w))}
 )
 """
 
@@ -85,45 +74,45 @@ def main(argv):
 """
 
     # Initialize crates, player.
-    init += f"\t(at player loc_{board.player[0]}{board.player[1]})\n"
+    init += f"\t(at player row_{board.player[0]}col_{board.player[1]})\n"
     for c_id, crate in enumerate(board.boxes):
         init += f"\n\t(CRATE crate_{c_id})"
-        init += f"\n\t(at crate_{c_id} loc_{crate[0]}{crate[1]})\n"
+        init += f"\n\t(at crate_{c_id} row_{crate[0]}col_{crate[1]})\n"
+        init += f"\n\t(has-crate row_{crate[0]}col_{crate[1]})\n"
 
     # Initialize adjacency, alignment.
     for r in range(board.h):
         for c in range(board.w):
             # Adjacency
             if r + 1 < board.h:
-                init += f"\n\t(is-adjacent loc_{r}{c} loc_{r+1}{c})"                # (x, y) -> (x+1, y)
-                init += f"\n\t(is-adjacent loc_{r+1}{c} loc_{r}{c})"                # (x, y) <- (x+1, y)
+                init += f"\n\t(is-adjacent row_{r}col_{c} row_{r+1}col_{c})"              # (x, y) -> (x+1, y)
+                init += f"\n\t(is-adjacent row_{r+1}col_{c} row_{r}col_{c})"              # (x, y) <- (x+1, y)
             if c + 1 < board.w:
-                init += f"\n\t(is-adjacent loc_{r}{c} loc_{r}{c+1})"                # (x, y) -> (x, y+1)
-                init += f"\n\t(is-adjacent loc_{r}{c+1} loc_{r}{c})"                # (x, y) <- (x, y+1)
+                init += f"\n\t(is-adjacent row_{r}col_{c} row_{r}col_{c+1})"              # (x, y) -> (x, y+1)
+                init += f"\n\t(is-adjacent row_{r}col_{c+1} row_{r}col_{c})"              # (x, y) <- (x, y+1)
 
             # Alignment
             if r + 1 < board.h and r + 2 < board.h:
-                init += f"\n\t(is-aligned loc_{r}{c} loc_{r+1}{c} loc_{r+2}{c})"    # L to R
-                init += f"\n\t(is-aligned loc_{r+2}{c} loc_{r+1}{c} loc_{r}{c})"    # R to L
+                init += f"\n\t(is-aligned row_{r}col_{c} row_{r+1}col_{c} row_{r+2}col_{c})"    # L to R
+                init += f"\n\t(is-aligned row_{r+2}col_{c} row_{r+1}col_{c} row_{r}col_{c})"    # R to L
 
             if c + 1 < board.w and c + 2 < board.w:
-                init += f"\n\t(is-aligned loc_{r}{c} loc_{r}{c+1} loc_{r}{c+2})"    # U to D
-                init += f"\n\t(is-aligned loc_{r}{c+2} loc_{r}{c+1} loc_{r}{c})"    # D to U
+                init += f"\n\t(is-aligned row_{r}col_{c} row_{r}col_{c+1} row_{r}col_{c+2})"    # U to D
+                init += f"\n\t(is-aligned row_{r}col_{c+2} row_{r}col_{c+1} row_{r}col_{c})"    # D to U
 
     # Initialize free cells.
     for r in range(board.h):
         for c in range(board.w):
             if not board.is_box(r, c) and not board.is_wall(r, c) and not (r, c) == board.player:
-                init += f"\n\t(is-free loc_{r}{c})"
+                init += f"\n\t(is-free row_{r}col_{c})"
 
     init += "\n)"
 
     goal = """
 (:goal (and
 """
-    for bt_pair in zip(range(len(board.boxes)), board.goals):
-        box, target = bt_pair
-        goal += f"\n\t(at crate_{box} loc_{target[0]}{target[1]})"
+    for target in board.goals:
+        goal += f"\n\t(has-crate row_{target[0]}col_{target[1]})"
 
     goal += "\n)\n)"
 
@@ -140,8 +129,28 @@ def main(argv):
 
 )
 """
-    with open("sokoban-instance.pddl", "wt") as outfile:
+    with open(outfilename, "wt") as outfile:
         outfile.write(instance)
+
+
+def main(argv):
+    args = parse_arguments(argv)
+    with open(args.i, 'r') as file:
+        board = SokobanGame(file.read().rstrip('\n'))
+
+    # TODO - Some of the things that you need to do:
+    #  1. (Previously) Have a domain.pddl file somewhere in disk that represents the Sokoban actions and predicates.
+    #   Done, see sokoban-domain.pddl
+
+    #  2. Generate an instance.pddl file from the given board, and save it to disk.
+    #   Done.
+    generate_instance_file(board)
+
+    #  3. Invoke some classical planner to solve the generated instance.
+    #   Will invoke fast downward.
+
+    #  3. Check the output and print the plan into the screen in some readable form.
+
 
 
 if __name__ == "__main__":
