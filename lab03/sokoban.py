@@ -81,14 +81,52 @@ def main(argv):
 
     init = f"""
 (:init
-    (PLAYER player)
-    {" ".join(["a"])}
-)
+\t(PLAYER player)
 """
+
+    # Initialize crates, player.
+    init += f"\t(at player loc_{board.player[0]}{board.player[1]})\n"
+    for c_id, crate in enumerate(board.boxes):
+        init += f"\n\t(CRATE crate_{c_id})"
+        init += f"\n\t(at crate_{c_id} loc_{crate[0]}{crate[1]})\n"
+
+    # Initialize adjacency, alignment.
+    for r in range(board.h):
+        for c in range(board.w):
+            # Adjacency
+            if r + 1 < board.h:
+                init += f"\n\t(is-adjacent loc_{r}{c} loc_{r+1}{c})"                # (x, y) -> (x+1, y)
+                init += f"\n\t(is-adjacent loc_{r+1}{c} loc_{r}{c})"                # (x, y) <- (x+1, y)
+            if c + 1 < board.w:
+                init += f"\n\t(is-adjacent loc_{r}{c} loc_{r}{c+1})"                # (x, y) -> (x, y+1)
+                init += f"\n\t(is-adjacent loc_{r}{c+1} loc_{r}{c})"                # (x, y) <- (x, y+1)
+
+            # Alignment
+            if r + 1 < board.h and r + 2 < board.h:
+                init += f"\n\t(is-aligned loc_{r}{c} loc_{r+1}{c} loc_{r+2}{c})"    # L to R
+                init += f"\n\t(is-aligned loc_{r+2}{c} loc_{r+1}{c} loc_{r}{c})"    # R to L
+
+            if c + 1 < board.w and c + 2 < board.w:
+                init += f"\n\t(is-aligned loc_{r}{c} loc_{r}{c+1} loc_{r}{c+2})"    # U to D
+                init += f"\n\t(is-aligned loc_{r}{c+2} loc_{r}{c+1} loc_{r}{c})"    # D to U
+
+    # Initialize free cells.
+    for r in range(board.h):
+        for c in range(board.w):
+            if not board.is_box(r, c) and not board.is_wall(r, c) and not (r, c) == board.player:
+                init += f"\n\t(is-free loc_{r}{c})"
+
+    init += "\n)"
+
     goal = """
-(:goal (and )
-)
+(:goal (and
 """
+    for bt_pair in zip(range(len(board.boxes)), board.goals):
+        box, target = bt_pair
+        goal += f"\n\t(at crate_{box} loc_{target[0]}{target[1]})"
+
+    goal += "\n)\n)"
+
     instance = f"""
 (define (problem sokoban-instance)
 
@@ -102,7 +140,8 @@ def main(argv):
 
 )
 """
-    print(instance)
+    with open("sokoban-instance.pddl", "wt") as outfile:
+        outfile.write(instance)
 
 
 if __name__ == "__main__":
