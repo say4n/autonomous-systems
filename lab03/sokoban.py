@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 import sys
 import subprocess
 
@@ -134,6 +135,14 @@ def generate_instance_file(board, outfilename="sokoban-instance.pddl"):
     with open(outfilename, "wt") as outfile:
         outfile.write(instance)
 
+def get_row_col(string):
+    row, col = None, None
+
+    match = re.match("row_(\d*)_col_(\d*)", string)
+    row = match.group(1)
+    col = match.group(2)
+
+    return row, col
 
 def main(argv):
     args = parse_arguments(argv)
@@ -162,6 +171,37 @@ def main(argv):
     except FileNotFoundError:
         print("Oops, looks like the plan file does not exist on disk!")
 
+    actions = []
+
+    for line in plan.split("\n"):
+        line = line[1:-1]
+
+        if line.startswith("teleport"):
+            _, _, a, b = line.split(" ")
+            r1, c1 = get_row_col(a)
+            r2, c2 = get_row_col(b)
+
+            actions.append(f"Teleport from ({r1}, {c1}) to ({r2}, {c2}).")
+        if line.startswith("move"):
+            _, _, a, b = line.split(" ")
+            r1, c1 = get_row_col(a)
+            r2, c2 = get_row_col(b)
+
+            actions.append(f"Move from ({r1}, {c1}) to ({r2}, {c2}).")
+        if line.startswith("push"):
+            _, _, _, a, b, c = line.split(" ")
+            r1, c1 = get_row_col(a)
+            r2, c2 = get_row_col(b)
+            r3, c3 = get_row_col(c)
+
+            actions.append(f"Push crate from ({r2}, {c2}) to ({r3}, {c3}).")
+
+    header_size = 40
+    print("#" * header_size)
+    print(" " * ((header_size - 4)//2),   "PLAN", " " * ((header_size - 4)//2))
+    print("#" * header_size)
+    print("\n".join(actions))
+    print("#" * header_size)
 
 
 if __name__ == "__main__":
