@@ -23,7 +23,7 @@
     ; Player teleported.
     (has-teleported)
 
-    ; Object y located at position x.
+    ; Object x located at position y.
     (at ?x ?y)
 )
 
