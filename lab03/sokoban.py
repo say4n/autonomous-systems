@@ -7,7 +7,7 @@ import subprocess
 
 
 def parse_arguments(argv):
-    parser = argparse.ArgumentParser(description='Solve Sudoku problems.')
+    parser = argparse.ArgumentParser(description='Solve Sokoban problems.')
     parser.add_argument("-i", help="Path to the file with the Sokoban instance.")
     parser.add_argument("-f", help="Path to the fast-downward.py.")
     return parser.parse_args(argv)
