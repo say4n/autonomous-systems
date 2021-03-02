@@ -160,7 +160,7 @@ def main(argv):
         with open("sas_plan", "rt") as planfile:
             plan = planfile.read()
     except FileNotFoundError:
-        print("Oops, looks like plan does not exist on disk!")
+        print("Oops, looks like the plan file does not exist on disk!")
 
 
 
