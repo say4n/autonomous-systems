@@ -23,6 +23,9 @@
     ; Player teleported.
     (has-teleported)
 
+    ; Has crate in location x.
+    (has-crate ?x)
+
     ; Object x located at position y.
     (at ?x ?y)
 )
@@ -67,6 +70,7 @@
 
         ; Is ?crate at ?crate_position?
         (at ?crate ?crate_position)
+        (has-crate ?crate_position)
 
         ; Is ?next_position free?
         (is-free ?next_position)
@@ -84,7 +88,9 @@
 
         ; Move crate to next position.
         (at ?crate ?next_position)
+        (has-crate ?next_position)
         (not (at ?crate ?crate_position))
+        (not (has-crate ?crate_position))
         (not (is-free ?next_position))
     )
 )
