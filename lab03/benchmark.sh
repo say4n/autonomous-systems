@@ -1,35 +1,29 @@
 #! /usr/bin bash
 
 FAST_DOWNWARD="/Users/Sayan/Desktop/Projects/downward/fast-downward.py"
-PROBLEMS_DIR="$(pwd)/benchmarks/sasquatch/level*.sok"
 
 rm -rf simulation
 mkdir -p simulation
 
 # Satisfying -> lama-first
 # Optimizing -> seq-opt-bjolp
-algorithms=(lama-first seq-opt-bjolp)
+problems=("$(pwd)/benchmarks/sasquatch/level1.sok" "$(pwd)/benchmarks/sasquatch/level2.sok")
+algorithms=(seq-sat-lama-2011 seq-sat-fd-autotune-1 seq-sat-fdss-1 seq-opt-lmcut seq-opt-fd-autotune seq-opt-bjolp)
 
 i=0
 solved=0
 
 for alg in $algorithms
 do
-    echo "Using $alg."
-    for problem in $PROBLEMS_DIR
+    for problem in $problems
     do
         i=$((i+1))
-        echo "Working on problem $i"
 
-        python3 sokoban.py -f $FAST_DOWNWARD -i $problem -a $alg -t 180 > simulation/$alg-level-$i.out
+        SECONDS=0
+        python3 sokoban.py -f $FAST_DOWNWARD -i $problem -a $alg > simulation/$alg-level-$i.out
+        duration=$SECONDS
 
-        if [ $? -eq 124 ]
-        then
-            echo "Timed out."
-        else
-            echo "Done."
-            solved=$((solved+1))
-        fi
+        echo "Solved $problem with $alg in $(($duration / 60)) minutes and $(($duration % 60)) seconds."
     done
 
     echo "Solved $solved/50 using $alg."
