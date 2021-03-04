@@ -162,7 +162,7 @@ def main(argv):
 
     #  3. Invoke some classical planner to solve the generated instance.
     #   Invoking fast downward.
-    subprocess.call([args.f, "--log-level", "warning", "--overall-time-limit",
+    subprocess.call([args.f, "--log-level", "debug", "--overall-time-limit",
                         args.t, "--alias", args.a, "sokoban-domain.pddl", filename])
 
     #  4. Check the output and print the plan into the screen in some readable form.
