@@ -1,4 +1,4 @@
-; Problem definition of the Sokoban domain.
+; Problem definition of the modified Sokoban domain.
 
 (define (domain sokoban-teleport)
 

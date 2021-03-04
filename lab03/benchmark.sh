@@ -21,7 +21,7 @@ do
         i=$((i+1))
         echo "Working on problem $i"
 
-        python3 sokoban.py -f $FAST_DOWNWARD -i $problem -a $alg -t 1m > simulation/$alg-level-$i.out
+        python3 sokoban.py -f $FAST_DOWNWARD -i $problem -a $alg -t 180 > simulation/$alg-level-$i.out
 
         if [ $? -eq 124 ]
         then

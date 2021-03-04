@@ -165,7 +165,7 @@ def main(argv):
     subprocess.call([args.f, "--log-level", "warning", "--overall-time-limit",
                         args.t, "--alias", args.a, "sokoban-domain.pddl", filename])
 
-    #  3. Check the output and print the plan into the screen in some readable form.
+    #  4. Check the output and print the plan into the screen in some readable form.
     #   Checkout output in file named `sas_pan`.
     plan = ""
     try:
