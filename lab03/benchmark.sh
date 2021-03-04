@@ -5,8 +5,6 @@ FAST_DOWNWARD="/Users/Sayan/Desktop/Projects/downward/fast-downward.py"
 rm -rf simulation
 mkdir -p simulation
 
-# Satisfying -> lama-first
-# Optimizing -> seq-opt-bjolp
 problems=("$(pwd)/benchmarks/sasquatch/level1.sok" "$(pwd)/benchmarks/sasquatch/level2.sok")
 algorithms=(seq-sat-lama-2011 seq-sat-fd-autotune-1 seq-sat-fdss-1 seq-opt-lmcut seq-opt-fd-autotune seq-opt-bjolp)
 
