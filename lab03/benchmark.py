@@ -22,16 +22,16 @@ if __name__ == "__main__":
     subprocess.run("rm -rf simulation".split(" "))
     subprocess.run("mkdir -p simulation".split(" "))
 
-    for i, level in enumerate(["benchmarks/sasquatch/level1.sok", "benchmarks/sasquatch/level2.sok"]):
-        subprocess.run(["python3", "sokoban.py", "-i", level])
+    for nature in CONFIGS:
+        for i, level in enumerate(["benchmarks/sasquatch/level1.sok", "benchmarks/sasquatch/level2.sok"]):
+            subprocess.run(["python3", "sokoban.py", "-i", level])
 
-        for nature in CONFIGS:
             for algorithm in CONFIGS[nature]:
                 with open(f"simulation/level-{i}-{algorithm}.out", "wt") as stdout:
                     print(f"Working on level {i} using {algorithm}.")
 
                     then = time.time()
-                    subprocess.run([FAST_DOWNWARD, "sokoban-domain.pddl", "sokoban-instance.pddl"] + CONFIGS["sat"][algorithm],
+                    subprocess.run([FAST_DOWNWARD, "sokoban-domain.pddl", "sokoban-instance.pddl"] + CONFIGS[nature][algorithm],
                                     stdout=stdout)
                     delta = time.time() - then
 
