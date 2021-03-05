@@ -167,7 +167,7 @@ def main(argv):
     #  3. Invoke some classical planner to solve the generated instance.
     #   Invoking fast downward.
     subprocess.call([args.f, "--log-level", "debug", "--overall-time-limit",
-                        args.t, args.a, "sokoban-domain.pddl", filename])
+                        args.t, "--alias", "lama-first", "sokoban-domain.pddl", filename])
 
     #  4. Check the output and print the plan into the screen in some readable form.
     #   Checkout output in file named `sas_pan`.
