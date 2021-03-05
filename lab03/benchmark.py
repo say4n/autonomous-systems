@@ -11,7 +11,6 @@ CONFIGS = {
     },
     "opt": {
         "astar_blind" : ["--search", "astar(blind)"],
-        "astar_lmcut" : ["--search", "astar(lmcut)"],
         "astar_hmax" : ["--search", "astar(hmax)"]
     }
 }
