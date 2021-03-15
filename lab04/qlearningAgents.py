@@ -201,7 +201,7 @@ class ApproximateQAgent(PacmanQAgent):
         """
         "*** YOUR CODE HERE ***"
 
-        delta = reward + self.computeValueFromQValues(nextState) -\
+        delta = reward + self.discount * self.computeValueFromQValues(nextState) -\
             self.getQValue(state, action)
 
         features = self.featExtractor.getFeatures(state, action)
